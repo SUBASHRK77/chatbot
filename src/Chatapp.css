@@ -1,0 +1,156 @@
+.flex
+{
+    display: flex;
+    margin-right: 70px;
+    /* flex-direction: row; */
+/* justify-content: space-between;  */
+border-radius: 15px;   
+}
+.chatbox
+{
+    display: normal;
+
+}
+.chatboxnull
+{
+    display: none;
+}
+.chathead
+{
+    background-color: #34495e;
+    text-align: 'center';
+    border-radius:'15px';
+    cursor:'pointer';
+    width: 310px;
+}
+
+.chatname
+{
+    /* margin-right: 150px; */
+    margin-left: 60px;
+    margin-top: -50px;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 400;
+    color: white;
+    cursor: pointer;
+    text-align: start;
+    /* border-radius: 15px; */
+}
+.chatname:hover{
+    background-color:  #6a89cc;
+    color: black;
+}
+
+.Inbox p
+{ 
+    margin-left: 500px;
+}
+.chattitle
+{
+    background-color:#34495e;
+    height:'40px';
+    padding: 2px;
+}
+
+/* .Chatwrap
+{
+    
+    min-height: 650px;
+    width: 800px;
+    border-radius: 20px;
+
+} */
+
+.chathouse
+{
+    border-radius: 20px;
+    background-color: #34495e;
+    /* height: 700px; */
+    width: 800px;
+}
+.chatroom
+{
+    border-radius: 20px;
+    background-color: #34495e;
+    /* min-height: 650px;
+    width: 800px; */
+}
+.chatroom img{
+    padding: 10px;
+}
+.chatroom p{
+    margin-left: 120px;
+    margin-top: -80px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+}
+.chatstate{
+    background-color:#a29bfe;
+    border-radius: 20px;
+    padding: 10px;
+    max-width: 200px;
+    color: white;
+    text-align: center;
+    font-size: 15px;
+}
+.chatdiv
+{
+    /* margin-top: 20px; */
+    float: right;
+    margin-right: 10px;
+}
+.online
+{
+    color:black;
+    margin-left: 120px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: -10px;
+}
+.profile
+{
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color:black
+}
+.textbox
+{
+    background-color: white;
+    /* border: solid 1px silver; */
+    border-radius: 30px;
+    margin-top: 500px;
+    width: 600px;
+    margin-left: 60px;
+    text-align: center;
+    padding: 7px;    
+}
+.textbox input
+{
+    margin-left: 10px;
+    width: 400px;
+    font-size: 15px;
+    border: none;
+    padding: 10px;
+}
+
+/* .Mapitems
+{
+    min-height: 600px;
+    width: 800px;
+    
+} */
+.buttonbg
+{
+    font-size: 15px;
+    border: none;
+    background-color: #00b894;
+    padding: 10px;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    margin-top: -50px;
+}
+
