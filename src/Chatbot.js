@@ -8,7 +8,7 @@ import {
 import Dpprofile from "./img/Dpprofile.avif";
 import { RiSendPlane2Fill, RiSettings2Fill } from "react-icons/ri";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Chatapp.css";
+import "./Chatbot.css";
 
 function Chatapp() {
   const [Chat, setChat] = useState([]);
