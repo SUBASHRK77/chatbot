@@ -10,7 +10,7 @@ import desmond from '../img/desmond.jpg'
 import krish from '../img/krish2.jpg'
 // import ScriptTag from 'react-script-tag';
 // import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import './Chatapp.css'
+import './Chatbot.css'
 
 function Chatapp()
 {

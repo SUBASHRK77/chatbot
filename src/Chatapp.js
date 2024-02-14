@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import ScriptTag from 'react-script-tag';
 // import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import "./Chatapp.css";
+import "./Chatbot.css";
 function Chatapp() {
   const [Chat, setChat] = useState({
     chat1: true,
