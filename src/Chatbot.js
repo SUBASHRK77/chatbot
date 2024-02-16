@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Accordion } from "react-bootstrap";
-import {
-  BsChatDots,
-  BsChatDotsFill,
-  BsFillChatSquareFill,
-} from "react-icons/bs";
-import Dpprofile from "./img/Dpprofile.avif";
+import {BsChatDotsFill} from "react-icons/bs";
 import { RiSendPlane2Fill, RiSettings2Fill } from "react-icons/ri";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Chatbot.css";
