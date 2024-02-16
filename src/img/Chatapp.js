@@ -10,6 +10,9 @@ import desmond from '../img/desmond.jpg'
 import krish from '../img/krish2.jpg'
 // import ScriptTag from 'react-script-tag';
 // import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+// https://chatwithme.netlify.app
+// jdbc:mysql://sql6.freesqldatabase.com:3306/sql6492450s
+
 import './Chatbot.css'
 
 function Chatapp()
