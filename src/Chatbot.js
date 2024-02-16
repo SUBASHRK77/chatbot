@@ -32,7 +32,9 @@ function Chatapp() {
   useEffect(() => {
     fetchProfile().then((data) => {
       setChat(data);
-    });
+    }).catch((err)=>{
+      console.log(err)
+    })
   }, []);
 
   const handleMessage = (e) => {
