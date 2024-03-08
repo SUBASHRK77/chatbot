@@ -1,41 +1,180 @@
-import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Accordion } from "react-bootstrap";
-import {BsChatDotsFill} from "react-icons/bs";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Accordion,
+  Modal,
+  Button,
+  FormControl,
+} from "react-bootstrap";
+import { BsChatDotsFill } from "react-icons/bs";
 import { RiSendPlane2Fill, RiSettings2Fill } from "react-icons/ri";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Chatbot.css";
+import { doc, updateDoc, addDoc } from "firebase/firestore";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { BiSolidContact } from "react-icons/bi";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import { ref, uploadBytes, listAll, getDownloadURL } from "@firebase/storage";
+import { v4 } from "uuid";
 
-function Chatapp() {
-  const [Chat, setChat] = useState([]);
+const Chatapp = ({ data, db, colRef, getChat, storage }) => {
+  const [Chat, setChat] = useState(data);
   const [message, setMessage] = useState("");
   const [profileData, setProfile] = useState({});
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  };
+  const [modal, setModal] = useState(false);
+  const [imageList, setImageList] = useState([]);
+  const [details, setDetails] = useState({
+    name: "",
+    proImage: [],
+    messages: [{}],
+    key: "",
+  });
 
-  const fetchProfile = () => {
-    return fetch("http://localhost:3002/posts", {
-      headers,
-      method: "GET",
-    }).then((response) => {
-      if (response.ok) {
-        try {
-          return response.json();
-        } catch (err) {
-          return true;
-        }
-      }
-    });
-  };
-
+  const image = [];
   useEffect(() => {
-    fetchProfile().then((data) => {
-      setChat(data);
-    }).catch((err)=>{
-      console.log(err)
-    })
-  }, []);
+    const imageListRef = ref(storage, `chatImages/`);
+    listAll(imageListRef).then((response) => {
+      response.items.forEach((list) => {
+        getDownloadURL(list).then((url) => {
+          image.push(url);
+          setImageList(image);
+          let datas = data.map((arr) => {
+            return {
+              ...arr,
+              proImage: image?.filter((obj) => obj.includes(arr?.key)),
+            };
+          });
+          setChat(datas);
+        });
+      });
+    });
+  }, [data]);
+
+  const handleSubmit = async () => {
+    let key = details.name?.toLowerCase();
+    let messages = [{ [key]: [] }];
+
+    const imageUpload = ref(
+      storage,
+      `chatImages/${details.proImage?.name + v4()}`
+    );
+
+    let snapshot = await uploadBytes(imageUpload, details.proImage);
+
+    const downloadURL = await snapshot.ref.fullPath;
+
+    let createParams = {
+      ...details,
+      messages,
+      key,
+      proImage: downloadURL,
+    };
+
+    addDoc(colRef, createParams)
+      .then(() => {
+        setModal(false);
+        getChat();
+        setDetails({});
+      })
+      .catch((err) => {
+        console.log(err, "create error");
+      });
+  };
+
+  const handleCreateChange = (event) => {
+    const { name, value, files } = event.target;
+    if (name === "name") {
+      setDetails({ ...details, [name]: value });
+    } else if (name === "proImage") {
+      setDetails({ ...details, proImage: files[0] });
+    }
+  };
+
+  const handleClose = () => {
+    setModal(false);
+  };
+
+  const MyVerticallyCenteredModal = useMemo(() => (
+    <Modal show={modal} onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title
+          id="contained-modal-title-vcenter"
+          style={{ width: "100%" }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <BiSolidContact fontSize={60} />
+            <div>Add Contact</div>
+          </div>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Label>User Name</Form.Label>
+        <InputGroup className="mb-3">
+          <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+          <FormControl
+            placeholder="Username"
+            name="name"
+            value={details.name}
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+            onChange={handleCreateChange}
+          />
+        </InputGroup>
+      </Modal.Body>
+      <Modal.Body>
+        <Form.Label>Upload Profile Image</Form.Label>
+        <FormControl
+          type="file"
+          name="proImage"
+          placeholder="select the profile image"
+          onChange={handleCreateChange}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={() => handleSubmit()}>Add</Button>
+      </Modal.Footer>
+    </Modal>
+  ));
+
+  // const headers = {
+  //   Accept: "application/json",
+  //   "Content-Type": "application/json",
+  // };
+
+  // const fetchProfile = () => {
+  //   return fetch("http://localhost:3002/posts", {
+  //     headers,
+  //     method: "GET",
+  //   }).then((response) => {
+  //     if (response.ok) {
+  //       try {
+  //         return response.json();
+  //       } catch (err) {
+  //         return true;
+  //       }
+  //     }
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   fetchProfile()
+  //     .then((data) => {
+  //       setChat(data);
+  //     })
+  //     .catch((err) => {
+  //     });
+  // }, []);
 
   const handleMessage = (e) => {
     const { value } = e.target;
@@ -45,35 +184,53 @@ function Chatapp() {
   const Inboxchats = () => {
     let messageData = profileData?.messages[0][profileData?.key];
     messageData?.push(message);
+
     setProfile({
       ...profileData,
       messages: [{ [profileData?.key]: messageData }],
     });
+
     let chatParams = {
       ...profileData,
     };
-    return fetch(`http://localhost:3002/posts/${profileData?.id}`, {
-      headers,
-      method: "PUT",
-      body: JSON.stringify(chatParams),
-    }).then((response) => {
-      if (response.ok) {
-        try {
-          setMessage("");
-          fetchProfile();
-        } catch (err) {
-          alert("Data not found");
-        }
-      }
-    });
+
+    const documentRef = doc(db, "posts", profileData?.id);
+
+    updateDoc(documentRef, chatParams)
+      .then(() => {
+        setMessage("");
+      })
+      .catch((error) => {
+        console.error("Error updating document: ", error);
+      });
+
+    // return fetch(`http://localhost:3002/posts/${profileData?.id}`, {
+    //   headers,
+    //   method: "PUT",
+    //   body: JSON.stringify(chatParams),
+    // }).then((response) => {
+    //   if (response.ok) {
+    //     try {
+    //       setMessage("");
+    //       // fetchProfile();
+    //     } catch (err) {
+    //       alert("Data not found");
+    //     }
+    //   }
+    // });
+  };
+  const showImageList = (key) => {
+    return imageList?.filter((arr) => arr.includes(key));
   };
 
-  const handleOpenProfile = (arr) => {
-    setProfile({ ...arr });
+  const handleOpenProfile = async (arr) => {
+    setProfile({ ...arr, proImage: await showImageList(arr?.key) });
   };
   return (
     <div>
       <div>
+        {MyVerticallyCenteredModal}
+
         <Container
           fluid
           style={{ backgroundColor: "#b2bec3", height: "100vh" }}
@@ -88,27 +245,43 @@ function Chatapp() {
                   padding: "20px",
                   display: "flex",
                   gap: "10px",
-                  justifyContent: "start",
+                  justifyContent: "space-between",
                   fontSize: "35px",
                   alignItems: "center",
                   marginTop: "50px",
                   color: "#fff",
                 }}
               >
-                <BsChatDotsFill />
-                <p className="profile">ChatBot</p>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <BsChatDotsFill />
+                  <p className="profile">ChatBot</p>
+                </div>
+                <div>
+                  <DropdownButton
+                    id="dropdown-basic-button"
+                    title={<BsThreeDotsVertical />}
+                  >
+                    <Dropdown.Item onClick={() => setModal(true)}>
+                      Add Contact
+                    </Dropdown.Item>
+                    <Dropdown.Item>Settings</Dropdown.Item>
+                  </DropdownButton>
+                </div>
               </div>
 
               <div className="chathead mt-3">
-                {Chat?.map((arr) => (
+                {Chat?.map((arr, index) => (
                   <div
+                    key={index}
                     className=" chattitle mt-2"
                     style={{ backgroundColor: "#34495e" }}
                     onClick={() => handleOpenProfile(arr)}
                   >
                     <div className="mt-1">
                       <img
-                        src={arr?.proImage}
+                        src={showImageList(arr.key)}
                         alt="jack"
                         height={"50px"}
                         width={"50px"}
@@ -230,7 +403,7 @@ function Chatapp() {
       </div>
     </div>
   );
-}
+};
 
 export default Chatapp;
 const accordianData = [
